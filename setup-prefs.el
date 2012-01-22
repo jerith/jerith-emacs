@@ -22,6 +22,9 @@
 (defun get-full-path-for-subdir (subdir)
   (convert-standard-filename (concat local-elisp-directory "/" subdir)))
 
+(defun prefs-binfile (binfile)
+  (get-full-path-for-subdir (concat "bin/" binfile)))
+
 (defun add-local-elisp-subdir (subdir)
   "Add a subdirectory of `local-elisp-directory' to the load path."
   (add-to-list 'load-path (get-full-path-for-subdir subdir)))
