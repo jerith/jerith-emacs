@@ -51,6 +51,7 @@ for determining which files should be loaded."
   (add-to-auto-modes file-regex file-mode))
 
 (add-local-elisp-subdir "elisp")
+(add-local-elisp-subdir "third-party")
 
 ;; Package magic.
 (when (load-file (get-full-path-for-subdir "elpa/package.el"))
