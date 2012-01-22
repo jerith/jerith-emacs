@@ -1,0 +1,13 @@
+How to use this thing
+---------------------
+
+For starters, you need emacs. (I use emacs 23 in Ubuntu and Aquamacs in OS X.)
+
+You'll need to put this in your ~/emacs.d directory. (In theory, you can use
+any directory you like if you set `local-elisp-directory', but this isn't very
+well tested.) Then you need the following line in your .emacs::
+
+    (load-file "~/.emacs.d/setup-prefs.el")
+
+Everything else should happen automagically. See the various elisp files for
+details.
