@@ -1,3 +1,16 @@
+;; Released to the public domain. See LICENSE for details.
+
+;; Instructions for use
+;;
+;; In your ~/.emacs, write:
+;;   (load-file "~/.emacs.d/setup-prefs.el")
+;;
+;; You can set `local-elisp-directory' if ~/.emacs.d doesn't suit you, but this isn't
+;; very well tested.
+;;
+;; TODO: Document this more.
+
+
 (unless (boundp 'local-elisp-directory)
   (defvar local-elisp-directory "~/.emacs.d"
     "Directory beneath which this particular tower of hacks expects to find various things."))

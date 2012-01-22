@@ -1,0 +1,6 @@
+setup-prefs.el and everything in the prefs/ directory are released to the
+public domain. See http://creativecommons.org/publicdomain/zero/1.0/ for some
+relevant legalese.
+
+Files in the elisp/, elpa/, and third-party directories may be covered under
+copyright, and you should check any licenses there individually.

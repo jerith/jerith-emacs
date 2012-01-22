@@ -1,5 +1,30 @@
 ;; Replacement zoom functionality for aquamacs.
 
+;; This file is based on code from 'aquamacs-autoface-mode.el' in Aquamacs,
+;; which is licensed under the GPL. Here is the copyright statement from that
+;; file:
+
+;; ==========
+;; Aquamacs Emacs is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation; either version 2, or (at your option)
+;; any later version.
+
+;; Aquamacs Emacs is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with Aquamacs Emacs; see the file COPYING.  If not, write to the
+;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+;; Boston, MA 02111-1307, USA.
+
+;; Copyright (C) 2008, 2010 David Reitter, all rights reserved.
+;; ==========
+
+;; Modifications (C) 2011 Jeremy Thugood.
+
 
 (defun do-zoom-font (delta-percentage)
   "Zoom default face in current buffer by `delta-percentage' percent.
