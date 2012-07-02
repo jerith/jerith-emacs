@@ -1,6 +1,10 @@
 ;; This really needs some splitting up.
 
 
+;; Autorevert to make VCS nicer
+(global-auto-revert-mode 1)
+
+
 ;; One space between sentences, please.
 (setq sentence-end-double-space nil)
 
