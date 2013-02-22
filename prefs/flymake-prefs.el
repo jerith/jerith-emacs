@@ -15,7 +15,10 @@
 ;; Clear out flymake things, because they're often broken.
 ;; TODO: This is a bit insane. We really need it to happen before anything that
 ;; might need flymake.
-(setq-default flymake-allowed-file-name-masks '())
+
+;; (setq-default flymake-allowed-file-name-masks '())
+
+(setq flymake-run-in-place nil)
 
 (add-hook 'find-file-hook 'flymake-find-file-hook)
 
