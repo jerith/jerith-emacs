@@ -52,9 +52,11 @@ for determining which files should be loaded."
   "Load prefs files in FILES list."
   (message "--== Loading prefs. ==--")
   (while files
+    (message (format-time-string "%H:%M:%S.%6N"))
     (let ((file (car files)))
       (load-prefs-file file))
     (setq files (cdr files)))
+  (message (format-time-string "%H:%M:%S.%6N"))
   (message "--== Finished loading prefs. ==--"))
 
 (defun add-to-auto-modes (file-regex file-mode)
@@ -66,12 +68,23 @@ for determining which files should be loaded."
   (autoload file-mode library)
   (add-to-auto-modes file-regex file-mode))
 
+(defun override-mode-in-alist (old-mode new-mode alist)
+  (mapc (lambda (alist-item)
+          (when (equal (cdr alist-item) old-mode)
+            (add-to-list alist (cons (car alist-item) new-mode))))
+        (symbol-value alist))
+  alist)
+
 (add-local-elisp-subdir "elisp")
 (add-local-elisp-subdir "third-party")
+;(add-local-elisp-subdir "elpa")
 
 ;; Package magic.
-(when (load-file (get-full-path-for-subdir "elpa/package.el"))
-  (package-initialize))
+(require 'package)
+;; (when (load-file (get-full-path-for-subdir "elpa/package.el"))
+;;   (package-initialize))
 (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
+(add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/"))
+(package-initialize)
 
 (load-prefs-files (get-prefs-files-to-load "prefs"))

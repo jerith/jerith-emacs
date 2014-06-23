@@ -6,7 +6,6 @@
 
 
 (require 'python) ; Because Aquamacs likes python-mode.el and I don't.
-;; (require 'ipython) ; Uses python-mode.el :-(
 (add-hook 'python-mode-hook 'highlight-tabs)
 (add-hook 'python-mode-hook (lambda ()
                               (local-set-key "\C-m" 'newline-and-indent)))
