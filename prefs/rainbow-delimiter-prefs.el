@@ -1,4 +1,6 @@
 
+(require 'rainbow-delimiters)
+
 (global-rainbow-delimiters-mode)
 
 ;; Set some custom colours based loosely on the zenburn theme.
