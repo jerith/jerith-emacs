@@ -9,7 +9,6 @@
       rainbow-identifiers-cie-l*a*b*-color-count 15)
 
 (defun start-rainbow-identifiers ()
-  (flku-remove-variable-name-keywords)
   (rainbow-identifiers-mode)
   (flku-remove-variable-name-keywords))
 
