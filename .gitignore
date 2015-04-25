@@ -1,4 +1,10 @@
 /third-party
 /auto-save-list
 /elpa
+/.cask
+/SessionDesktop.el
+/abbrev_defs
+/ac-comphist.dat
+/var
+/games
 *~

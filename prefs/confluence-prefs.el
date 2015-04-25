@@ -4,6 +4,6 @@
 (when (boundp 'confluence-url)
   (require 'confluence)
   (add-hook 'confluence-mode-hook
-	    (local-set-key "\C-xw" confluence-prefix-map)
-	    (local-set-key "\M-j" 'confluence-newline-and-indent)
-	    (local-set-key "\M-;" 'confluence-list-indent-dwim)))
+            (local-set-key "\C-xw" confluence-prefix-map)
+            (local-set-key "\M-j" 'confluence-newline-and-indent)
+            (local-set-key "\M-;" 'confluence-list-indent-dwim)))

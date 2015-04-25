@@ -79,12 +79,12 @@ for determining which files should be loaded."
 (add-local-elisp-subdir "third-party")
 ;(add-local-elisp-subdir "elpa")
 
-;; Package magic.
-(require 'package)
-;; (when (load-file (get-full-path-for-subdir "elpa/package.el"))
-;;   (package-initialize))
-(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
-(add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/"))
-(package-initialize)
+;; ;; Package magic.
+;; (require 'package)
+;; ;; (when (load-file (get-full-path-for-subdir "elpa/package.el"))
+;; ;;   (package-initialize))
+;; (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
+;; (add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/"))
+;; (package-initialize)
 
 (load-prefs-files (get-prefs-files-to-load "prefs"))

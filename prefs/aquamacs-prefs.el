@@ -5,6 +5,7 @@
   ;; Make this more Emacsy.
   (one-buffer-one-frame-mode -1)
   (tabbar-mode -1)
+  (tool-bar-mode 0)
 
   ;; Make some keybindings saner.
   (define-key osx-key-mode-map `[(,osxkeys-command-key w)] nil)
