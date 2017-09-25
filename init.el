@@ -1,6 +1,11 @@
 (require 'cask)
 (cask-initialize)
-(require 'pallet)
+;; (require 'pallet)
+
+;; I like unicode.
+(prefer-coding-system 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
 
 
 ;; Autorevert to make VCS nicer
@@ -36,7 +41,12 @@
 
 ;; Undo some cruft that may have been done.
 (cua-mode 0)
-(setq inhibit-startup-message 1)
+(setq inhibit-startup-screen t)
+;; (tool-bar-mode 0)
+
+;; Better behaviour when started with multiple files.
+(setq inhibit-startup-buffer-menu t)
+(setq split-width-threshold 120)
 
 
 ;; Syntax highlighting on.

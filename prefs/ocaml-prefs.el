@@ -5,6 +5,9 @@
 ;; We only want to do this work if we're actually using ocaml.
 (eval-after-load "tuareg"
   '(progn
+     ;; Undefine this function to stop `<<' triggering camlp4 syntax stuff.
+     (defun tuareg-syntax-propertize (start end))
+
      (setq opam-share (substring (shell-command-to-string
                                   "opam config var share") 0 -1))
      (add-to-list 'load-path (concat opam-share "/emacs/site-lisp"))
@@ -20,7 +23,9 @@
 
      (add-hook 'tuareg-mode-hook 'merlin-mode)
      (add-hook 'tuareg-mode-hook 'ocp-setup-indent)
-     (setq merlin-use-auto-complete-mode t)
+     (setq merlin-use-auto-complete-mode 'easy)
+     ;; Use opam switch to lookup ocamlmerlin binary
+     (setq merlin-command 'opam)
      ;; (setq merlin-error-after-save nil)
 
      (require 'auto-complete)

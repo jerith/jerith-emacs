@@ -1,4 +1,12 @@
-;; I don't like html-helper-mode.
+;; web-mode, please.
+(require 'web-mode)
+(add-to-list 'auto-mode-alist '("\\.html?$" . web-mode))
+(setq web-mode-markup-indent-offset 2)
+(setq web-mode-code-indent-offset 2)
+(setq web-mode-script-padding 2)
 
-(override-mode-in-alist 'html-helper-mode 'html-mode 'magic-mode-alist)
-(override-mode-in-alist 'html-helper-mode 'html-mode 'auto-mode-alist)
+;; Use tidy5 instead of tidy, because we like HTML5.
+(setq flycheck-html-tidy-executable "tidy5")
+
+;; This is like HTML, right?
+(add-to-list 'auto-mode-alist '("\\.scss\\'" . sass-mode))

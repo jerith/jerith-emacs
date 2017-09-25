@@ -1,13 +1,19 @@
 ;; This really needs some splitting up.
 
 
-;; On OSX, we don't get a login shell by default.
+;; On OSX, we don't get a login shell by default or clipboard access.
 (if (eq system-type 'darwin)
-    ;; Invoke login shells, so that .profile or .bash_profile is read
-    (setq shell-command-switch "-lc"))
+    (progn
+      ;; Fix some keybindings
+      (global-set-key [home] 'move-beginning-of-line)
+      (global-set-key  [end] 'move-end-of-line)
+      ;; Invoke login shells, so that .profile or .bash_profile is read
+      (setq shell-command-switch "-lc")
+      ;; Load some pbcopy/pbpaste functions
+      (require 'pbstuff)))
 
 (unless (display-graphic-p)
-  (setq menu-bar-mode nil))
+  (menu-bar-mode -1))
 
 
 ;; ;; Autorevert to make VCS nicer
