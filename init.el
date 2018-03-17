@@ -1,83 +1,50 @@
-(require 'cask)
-(cask-initialize)
-;; (require 'pallet)
+;;; init.el --- Where all the magic begins
 
-;; I like unicode.
-(prefer-coding-system 'utf-8)
-(set-terminal-coding-system 'utf-8)
-(set-keyboard-coding-system 'utf-8)
+;;; Commentary:
+;;
+;; This is a thin wrapper around emacs-init.el which is generated from
+;; emacs-init.org.
 
+;;; Code:
 
-;; Autorevert to make VCS nicer
-(global-auto-revert-mode 1)
+;; Added by Package.el.  This must come before configurations of
+;; installed packages.  Don't delete this line.  If you don't want it,
+;; just comment it out by adding a semicolon to the start of the line.
+;; You may delete these explanatory comments.
+(package-initialize)
 
+(defvar my-init-file (expand-file-name "emacs-init.el" user-emacs-directory)
+  "All configurations stored in this file.")
 
-;; One space between sentences, please.
-(setq sentence-end-double-space nil)
+(defvar my-org-file (expand-file-name "emacs-init.org" user-emacs-directory)
+  "All configurations tangled from this file.")
 
+(defvar my-elisp-dir (expand-file-name "elisp/" user-emacs-directory)
+  "Random elisp that isn't in ELPA or wherever.")
 
-;; Better handling for unique buffer names:
-(require 'uniquify)
-(setq uniquify-buffer-name-style 'post-forward
-      uniquify-separator ":")
+;; (org-babel-load-file
+;;  (expand-file-name "emacs-init.org" user-emacs-directory))
 
+(if (file-exists-p my-init-file)
+    (load-file my-init-file)
+  (progn
+    (org-babel-load-file
+     (expand-file-name "emacs-init.org" user-emacs-directory))))
 
-;; Use ido
-(require 'ido)
-(ido-mode t)
-(setq ido-everywhere t
-      ;; If the file at point exists, use that
-      ido-use-filename-at-point nil
-      ;; Or if it is an URL...
-      ido-use-url-at-point nil
-      ;; Even if TAB completes uniquely,
-      ;; still wait for RET
-      ido-confirm-unique-completion t
-      ;; If the input does not exist,
-      ;; don't look in unexpected places.
-      ;; I probably want a new file.
-      ido-auto-merge-work-directories-length -1)
-
-
-;; Undo some cruft that may have been done.
-(cua-mode 0)
-(setq inhibit-startup-screen t)
-;; (tool-bar-mode 0)
-
-;; Better behaviour when started with multiple files.
-(setq inhibit-startup-buffer-menu t)
-(setq split-width-threshold 120)
-
-
-;; Syntax highlighting on.
-(global-font-lock-mode 1)
-(defconst font-lock-maximum-decoration t)
-;; Show trailing whitespace.
-(setq whitespace-style '(face empty tabs lines-tail trailing))
-(global-whitespace-mode t)
-(setq-default show-trailing-whitespace t)
-
-;; Current point in mode bar.
-(line-number-mode t)
-(column-number-mode t)
-
-;; Enable highlighting when marking a region
-(setq-default transient-mark-mode t)
-
-;; Never use tabs to indent:
-(setq-default indent-tabs-mode nil)
-
-;; Tab stops:
-(setq-default tab-width 4)
-
-;; Fill column:
-(setq-default fill-column 79)
-
-;; Bind keys:
-(global-set-key "\C-cg" 'goto-line)
-
-;; Turn off backups (that's what VCS is for) and move auto-save out the way.
-(setq auto-save-default nil)
-(setq make-backup-files nil)
-
-(load-file "~/.emacs.d/setup-prefs.el")
+;;; init.el ends here
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(frame-background-mode (quote dark))
+ '(package-selected-packages
+   (quote
+    (flycheck-gometalinter bazel-mode flycheck-elixir alchemist toml-mode python-docstring yaml-mode xterm-color web-mode utop use-package tuareg sonic-pi sass-mode ruby-electric rainbow-identifiers rainbow-delimiters puppet-mode paredit pallet mediawiki markdown-mode haskell-mode go-mode gist flycheck-rust eruby-mode erlang dockerfile-mode color-theme clojure-mode cargo auto-complete)))
+ '(safe-local-variable-values (quote ((test-case-name . twisted\.test\.test_paths)))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

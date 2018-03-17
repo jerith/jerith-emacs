@@ -3,6 +3,8 @@
 (source melpa)
 (source melpa-stable)
 
+(depends-on "use-package")
+(depends-on "async")
 (depends-on "auto-complete")
 (depends-on "caml")
 (depends-on "cask")
@@ -42,3 +44,5 @@
 (depends-on "dockerfile-mode")
 (depends-on "web-mode")
 (depends-on "sass-mode")
+(depends-on "alchemist")
+(depends-on "erlang")
