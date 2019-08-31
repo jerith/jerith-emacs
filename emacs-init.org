@@ -256,7 +256,7 @@ No menus in the terminal, please.
 
   ;; Undo some cruft that may have been done.
   (cua-mode 0)
-  (tool-bar-mode 0)
+  (if window-system (tool-bar-mode 0))
   (setq inhibit-startup-screen t)
 
   ;; Better behaviour when started with multiple files.
@@ -334,6 +334,23 @@ over time.
             (lambda () (local-set-key "\C-m" 'newline-and-indent)))
 #+END_SRC
 
+** C#
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package omnisharp-mode
+    :hook csharp-mode
+    :init
+    (setq omnisharp-server-executable-path "/usr/local/bin/omnisharp"))
+#+END_SRC
+
+** Clojure
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package clojure-mode
+    :init
+    (add-hook 'clojure-mode-hook #'enable-paredit-mode))
+#+END_SRC
+
 ** Docker
 
 #+BEGIN_SRC emacs-lisp :tangle yes
@@ -365,15 +382,41 @@ Setup documentation for this is annoyingly hard to find. :-(
     :config
     (setq gofmt-command "goimports")
     (add-to-list 'exec-path "~/.gostuff/bin")
-    (add-hook 'go-mode-hook 'flycheck-mode))
+    (add-hook 'go-mode-hook 'flycheck-mode)
+    ;; Drop tabs from visible whitespace list.
+    (add-hook 'go-mode-hook
+              (lambda ()
+                (setq-local whitespace-style '(face empty lines-tail trailing)))))
 
-  (use-package flycheck-gometalinter
+  ;; (use-package flycheck-gometalinter
+  ;;   :ensure t
+  ;;   :config
+  ;;   (progn
+  ;;     (setq flycheck-gometalinter-fast t)
+  ;;     (setq flycheck-gometalinter-tests t)
+  ;;     (setq flycheck-gometalinter-deadline "10s")
+  ;;     (flycheck-gometalinter-setup)))
+
+  (use-package flycheck-golangci-lint
     :ensure t
+    :hook (go-mode . flycheck-golangci-lint-setup)
     :config
-    (progn
-      (setq flycheck-gometalinter-fast t)
-      (setq flycheck-gometalinter-tests t)
-      (flycheck-gometalinter-setup)))
+    (setq flycheck-golangci-lint-tests t)
+    (setq flycheck-golangci-lint-deadline "5s")
+    ;; There's a bug that requires us to stick = on the front.
+    (setq flycheck-golangci-lint-config
+          (expand-file-name "~/.gostuff/golangci-emacs.yml")))
+#+END_SRC
+
+** Groovy
+
+This is mostly used for Jenkins.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package groovy-mode
+    :mode (("^Jenkinsfile$" . groovy-mode)
+           ("\\.jenkins$" . groovy-mode)
+           ("\\.groovy$" . groovy-mode)))
 #+END_SRC
 
 ** HTML
@@ -392,6 +435,14 @@ Setup documentation for this is annoyingly hard to find. :-(
   ;; This is like HTML, right?
   (use-package sass-mode
     :mode "\\.scss\\'")
+#+END_SRC
+
+** JavaScript
+
+This includes JSON.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (setq-default js-indent-level 2)
 #+END_SRC
 
 ** OCaml
@@ -447,6 +498,16 @@ I want .m files to be Octave, not Objective C.
 Tabs are highlighted in the general whitespace configuration.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package python
+    :mode ("\\.py\\'" . python-mode)
+    :config
+    (add-hook 'python-mode-hook
+              (lambda () (local-set-key "\C-m" 'newline-and-indent))))
+#+END_SRC
+
+I used to use python-docstring, but that seems to no longer be necessary.
+
+#+BEGIN_SRC emacs-lisp :tangle no
   (use-package python
     :mode ("\\.py\\'" . python-mode)
     :config

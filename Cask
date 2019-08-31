@@ -46,3 +46,7 @@
 (depends-on "sass-mode")
 (depends-on "alchemist")
 (depends-on "erlang")
+(depends-on "lsp-mode")
+(depends-on "lsp-ui")
+(depends-on "racer")
+(depends-on "cider")

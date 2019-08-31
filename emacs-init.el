@@ -1,4 +1,3 @@
-
 (require 'cask)
 (cask-initialize)
 
@@ -113,7 +112,7 @@
 
 ;; Undo some cruft that may have been done.
 (cua-mode 0)
-(tool-bar-mode 0)
+(if window-system (tool-bar-mode 0))
 (setq inhibit-startup-screen t)
 
 ;; Better behaviour when started with multiple files.
@@ -161,6 +160,15 @@
 (add-hook 'c-mode-common-hook
           (lambda () (local-set-key "\C-m" 'newline-and-indent)))
 
+(use-package omnisharp-mode
+  :hook csharp-mode
+  :init
+  (setq omnisharp-server-executable-path "/usr/local/bin/omnisharp"))
+
+(use-package clojure-mode
+  :init
+  (add-hook 'clojure-mode-hook #'enable-paredit-mode))
+
 (use-package dockerfile-mode
   :mode "\\.docker$")
 
@@ -177,15 +185,35 @@
   :config
   (setq gofmt-command "goimports")
   (add-to-list 'exec-path "~/.gostuff/bin")
-  (add-hook 'go-mode-hook 'flycheck-mode))
+  (add-hook 'go-mode-hook 'flycheck-mode)
+  ;; Drop tabs from visible whitespace list.
+  (add-hook 'go-mode-hook
+            (lambda ()
+              (setq-local whitespace-style '(face empty lines-tail trailing)))))
 
-(use-package flycheck-gometalinter
+;; (use-package flycheck-gometalinter
+;;   :ensure t
+;;   :config
+;;   (progn
+;;     (setq flycheck-gometalinter-fast t)
+;;     (setq flycheck-gometalinter-tests t)
+;;     (setq flycheck-gometalinter-deadline "10s")
+;;     (flycheck-gometalinter-setup)))
+
+(use-package flycheck-golangci-lint
   :ensure t
+  :hook (go-mode . flycheck-golangci-lint-setup)
   :config
-  (progn
-    (setq flycheck-gometalinter-fast t)
-    (setq flycheck-gometalinter-tests t)
-    (flycheck-gometalinter-setup)))
+  (setq flycheck-golangci-lint-tests t)
+  (setq flycheck-golangci-lint-deadline "5s")
+  ;; There's a bug that requires us to stick = on the front.
+  (setq flycheck-golangci-lint-config
+        (expand-file-name "~/.gostuff/golangci-emacs.yml")))
+
+(use-package groovy-mode
+  :mode (("^Jenkinsfile$" . groovy-mode)
+         ("\\.jenkins$" . groovy-mode)
+         ("\\.groovy$" . groovy-mode)))
 
 ;; web-mode, please.
 (use-package web-mode
@@ -200,6 +228,8 @@
 ;; This is like HTML, right?
 (use-package sass-mode
   :mode "\\.scss\\'")
+
+(setq-default js-indent-level 2)
 
 (use-package tuareg
   :mode (("\\.ml[ily]?$" . tuareg-mode)
@@ -243,11 +273,7 @@
   :mode ("\\.py\\'" . python-mode)
   :config
   (add-hook 'python-mode-hook
-            (lambda () (local-set-key "\C-m" 'newline-and-indent)))
-  (use-package python-docstring
-    :config
-    (setq python-docstring-sentence-end-double-space nil)
-    (python-docstring-install)))
+            (lambda () (local-set-key "\C-m" 'newline-and-indent))))
 
 (use-package ruby-mode
   :mode "\\.rb\\'"
