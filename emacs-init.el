@@ -6,6 +6,7 @@
 ;; (setq use-package-verbose t)
 
 (use-package async
+  :ensure t
   :config
   (defun my/init-hook ()
     "If the current buffer is 'emacs-init.org' the code-blocks are tangled."
@@ -41,6 +42,7 @@
         ido-auto-merge-work-directories-length -1))
 
 (use-package uniquify
+  ;; :ensure t
   :config
   (setq uniquify-buffer-name-style 'post-forward
         uniquify-separator ":"))
@@ -127,19 +129,29 @@
 (setq auto-save-default nil)
 (setq make-backup-files nil)
 
-(add-hook 'after-init-hook #'global-flycheck-mode)
-(setq flycheck-check-syntax-automatically '(mode-enabled save))
+(use-package flycheck
+  :ensure t
+  :init
+  (global-flycheck-mode)
+  (setq flycheck-check-syntax-automatically '(mode-enabled save)))
+
+(use-package flyspell
+  :hook
+  ((org-mode markdown-mode) . flyspell-mode)
+  ;; (prog-mode . flyspell-prog-mode)
+  (before-save-hook . flyspell-buffer)
+  :custom
+  (ispell-program-name "aspell")
+  (ispell-extra-args '("--sug-mode=normal" "--master=en_GB-ize-w_accents")))
 
 (setq-default gist-view-gist t)
-
-(use-package git-emacs
-  :load-path "third-party/git-emacs")
 
 (use-package org
   :config
   (setq org-src-fontify-natively t))
 
 (use-package rainbow-delimiters
+  :ensure t
   :defer t
   :init
   (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
@@ -166,10 +178,25 @@
   (setq omnisharp-server-executable-path "/usr/local/bin/omnisharp"))
 
 (use-package clojure-mode
+  :ensure t
   :init
-  (add-hook 'clojure-mode-hook #'enable-paredit-mode))
+  (add-hook 'clojure-mode-hook #'enable-paredit-mode)
+  :config
+  (use-package flycheck-clj-kondo
+    :ensure t))
+
+(use-package cider
+  :ensure t
+  :defer t)
+
+(use-package dhall-mode
+  :ensure t
+  :config
+  (setq
+   dhall-format-at-save nil))
 
 (use-package dockerfile-mode
+  :ensure t
   :mode "\\.docker$")
 
 (use-package elixir-mode
@@ -179,13 +206,19 @@
   (add-hook 'elixir-mode-hook 'alchemist-mode)
   (setq alchemist-hooks-compile-on-save t))
 
+(use-package erlang
+  :ensure t)
+
 (use-package go-mode
+  :ensure t
   :hook
   (before-save . gofmt-before-save)
   :config
+  ;; gopls doesn't yet fix imports.
   (setq gofmt-command "goimports")
-  (add-to-list 'exec-path "~/.gostuff/bin")
-  (add-hook 'go-mode-hook 'flycheck-mode)
+  (add-to-list 'exec-path (concat (getenv "GOPATH") "/bin"))
+  (add-hook 'go-mode-hook #'lsp-deferred)
+  ;; (add-hook 'go-mode-hook 'flycheck-mode)
   ;; Drop tabs from visible whitespace list.
   (add-hook 'go-mode-hook
             (lambda ()
@@ -200,15 +233,18 @@
 ;;     (setq flycheck-gometalinter-deadline "10s")
 ;;     (flycheck-gometalinter-setup)))
 
-(use-package flycheck-golangci-lint
-  :ensure t
-  :hook (go-mode . flycheck-golangci-lint-setup)
-  :config
-  (setq flycheck-golangci-lint-tests t)
-  (setq flycheck-golangci-lint-deadline "5s")
-  ;; There's a bug that requires us to stick = on the front.
-  (setq flycheck-golangci-lint-config
-        (expand-file-name "~/.gostuff/golangci-emacs.yml")))
+;; (use-package flycheck-golangci-lint
+;;   :ensure t
+;;   :hook (go-mode . flycheck-golangci-lint-setup)
+;;   :config
+;;   (setq flycheck-golangci-lint-tests t)
+;;   (setq flycheck-golangci-lint-deadline "5s")
+;;   ;; There's a bug that requires us to stick = on the front.
+;;   (setq flycheck-golangci-lint-config
+;;         (expand-file-name "~/.gostuff/golangci-emacs.yml")))
+
+(use-package graphql-mode
+  :ensure t)
 
 (use-package groovy-mode
   :mode (("^Jenkinsfile$" . groovy-mode)
@@ -217,19 +253,56 @@
 
 ;; web-mode, please.
 (use-package web-mode
-  :mode "\\.html?$"
+  :ensure t
+  :mode (("\\.html?$" . web-mode)
+         ("\\.tsx$" . web-mode))
   :config
   (setq web-mode-markup-indent-offset 2)
   (setq web-mode-code-indent-offset 2)
   (setq web-mode-script-padding 2)
   ;; Use tidy5 instead of tidy, because we like HTML5.
-  (setq flycheck-html-tidy-executable "tidy5"))
+  (setq flycheck-html-tidy-executable "tidy5")
+  (add-hook 'web-mode-hook
+        (lambda ()
+          (when (string-equal "tsx" (file-name-extension buffer-file-name))
+            (setup-tide-mode)))))
 
 ;; This is like HTML, right?
 (use-package sass-mode
+  :ensure t
   :mode "\\.scss\\'")
 
 (setq-default js-indent-level 2)
+
+(use-package jq-mode
+  :ensure t
+  :mode (("\\.jq$" . jq-mode)))
+
+(use-package jsonnet-mode
+  :ensure t)
+
+(use-package lsp-mode
+  :ensure t
+  :hook
+  (rust-mode dhall-mode)
+  :config
+  (setq lsp-prefer-flymake nil
+        lsp-enable-snippet nil)
+  :commands
+  lsp)
+
+(use-package lsp-ui
+  :ensure t
+  :config
+  (setq lsp-ui-doc-enable nil
+        lsp-ui-flycheck-enable t
+        lsp-ui-flycheck-live-reporting t
+        lsp-ui-sideline-show-hover nil)
+  :commands lsp-ui-mode)
+
+(use-package lua-mode
+  :ensure t
+  )
 
 (use-package tuareg
   :mode (("\\.ml[ily]?$" . tuareg-mode)
@@ -269,6 +342,12 @@
 (use-package octave-mode
   :mode "\\.m$")
 
+(use-package php-mode
+  :ensure t)
+
+(use-package puppet-mode
+  :ensure t)
+
 (use-package python
   :mode ("\\.py\\'" . python-mode)
   :config
@@ -295,8 +374,35 @@
         (indent-line-to indent)
         (when (> offset 0) (forward-char offset)))))
   (setq ruby-deep-indent-paren-style nil)
+  (use-package ruby-electric
+    :ensure t)
   (add-hook 'ruby-mode-hook 'ruby-electric-mode))
 
-(add-hook 'rust-mode-hook #'flycheck-rust-setup)
+;; (add-hook 'rust-mode-hook #'flycheck-rust-setup)
+
+(use-package cargo
+  :ensure t
+  )
+
+(use-package rust-mode
+  :ensure t
+  )
 
 (add-hook 'shell-mode-hook 'emacs-lock-mode)
+
+(use-package terraform-mode
+  :ensure t)
+
+(use-package typescript-mode
+  :ensure t)
+
+(setq-default typescript-indent-level 2)
+
+(use-package tide
+  :ensure t
+  :after (typescript-mode flycheck)
+  :hook ((typescript-mode . tide-setup)
+         (typescript-mode . tide-hl-identifier-mode)))
+
+(use-package yaml-mode
+  :ensure t)

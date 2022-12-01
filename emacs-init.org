@@ -90,6 +90,7 @@ whenever we save this org-mode file.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package async
+    :ensure t
     :config
     (defun my/init-hook ()
       "If the current buffer is 'emacs-init.org' the code-blocks are tangled."
@@ -145,6 +146,7 @@ I prefer prefix uniquification with =ido-mode= to navigate.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package uniquify
+    ;; :ensure t
     :config
     (setq uniquify-buffer-name-style 'post-forward
           uniquify-separator ":"))
@@ -277,21 +279,30 @@ No menus in the terminal, please.
 ** Flycheck
 
 #+BEGIN_SRC emacs-lisp :tangle yes
-  (add-hook 'after-init-hook #'global-flycheck-mode)
-  (setq flycheck-check-syntax-automatically '(mode-enabled save))
+  (use-package flycheck
+    :ensure t
+    :init
+    (global-flycheck-mode)
+    (setq flycheck-check-syntax-automatically '(mode-enabled save)))
+#+END_SRC
+
+** Flyspell
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package flyspell
+    :hook
+    ((org-mode markdown-mode) . flyspell-mode)
+    ;; (prog-mode . flyspell-prog-mode)
+    (before-save-hook . flyspell-buffer)
+    :custom
+    (ispell-program-name "aspell")
+    (ispell-extra-args '("--sug-mode=normal" "--master=en_GB-ize-w_accents")))
 #+END_SRC
 
 ** gist
 
 #+BEGIN_SRC emacs-lisp :tangle yes
   (setq-default gist-view-gist t)
-#+END_SRC
-
-** git
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-  (use-package git-emacs
-    :load-path "third-party/git-emacs")
 #+END_SRC
 
 ** Org
@@ -309,6 +320,7 @@ over time.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package rainbow-delimiters
+    :ensure t
     :defer t
     :init
     (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
@@ -347,14 +359,33 @@ over time.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package clojure-mode
+    :ensure t
     :init
-    (add-hook 'clojure-mode-hook #'enable-paredit-mode))
+    (add-hook 'clojure-mode-hook #'enable-paredit-mode)
+    :config
+    (use-package flycheck-clj-kondo
+      :ensure t))
+
+  (use-package cider
+    :ensure t
+    :defer t)
+#+END_SRC
+
+** dhall
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package dhall-mode
+    :ensure t
+    :config
+    (setq
+     dhall-format-at-save nil))
 #+END_SRC
 
 ** Docker
 
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package dockerfile-mode
+    :ensure t
     :mode "\\.docker$")
 #+END_SRC
 
@@ -373,16 +404,38 @@ Setup documentation for this is annoyingly hard to find. :-(
     (setq alchemist-hooks-compile-on-save t))
 #+END_SRC
 
+** Emacs-reveal
+
+Presentation stuff. See https://gitlab.com/oer/emacs-reveal-howto for details.
+
+Turns out this has an annoyingly long setup step that runs every startup, so
+disable for now.
+
+# #+BEGIN_SRC emacs-lisp :tangle yes
+#   (use-package emacs-reveal
+#     :load-path "third-party/emacs-reveal")
+# #+END_SRC
+
+** Erlang
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package erlang
+    :ensure t)
+#+END_SRC
+
 ** Go
 
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package go-mode
+    :ensure t
     :hook
     (before-save . gofmt-before-save)
     :config
+    ;; gopls doesn't yet fix imports.
     (setq gofmt-command "goimports")
-    (add-to-list 'exec-path "~/.gostuff/bin")
-    (add-hook 'go-mode-hook 'flycheck-mode)
+    (add-to-list 'exec-path (concat (getenv "GOPATH") "/bin"))
+    (add-hook 'go-mode-hook #'lsp-deferred)
+    ;; (add-hook 'go-mode-hook 'flycheck-mode)
     ;; Drop tabs from visible whitespace list.
     (add-hook 'go-mode-hook
               (lambda ()
@@ -397,15 +450,22 @@ Setup documentation for this is annoyingly hard to find. :-(
   ;;     (setq flycheck-gometalinter-deadline "10s")
   ;;     (flycheck-gometalinter-setup)))
 
-  (use-package flycheck-golangci-lint
-    :ensure t
-    :hook (go-mode . flycheck-golangci-lint-setup)
-    :config
-    (setq flycheck-golangci-lint-tests t)
-    (setq flycheck-golangci-lint-deadline "5s")
-    ;; There's a bug that requires us to stick = on the front.
-    (setq flycheck-golangci-lint-config
-          (expand-file-name "~/.gostuff/golangci-emacs.yml")))
+  ;; (use-package flycheck-golangci-lint
+  ;;   :ensure t
+  ;;   :hook (go-mode . flycheck-golangci-lint-setup)
+  ;;   :config
+  ;;   (setq flycheck-golangci-lint-tests t)
+  ;;   (setq flycheck-golangci-lint-deadline "5s")
+  ;;   ;; There's a bug that requires us to stick = on the front.
+  ;;   (setq flycheck-golangci-lint-config
+  ;;         (expand-file-name "~/.gostuff/golangci-emacs.yml")))
+#+END_SRC
+
+** GraphQL
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package graphql-mode
+    :ensure t)
 #+END_SRC
 
 ** Groovy
@@ -422,19 +482,26 @@ This is mostly used for Jenkins.
 ** HTML
 
 #+BEGIN_SRC emacs-lisp :tangle yes
-  ;; web-mode, please.
-  (use-package web-mode
-    :mode "\\.html?$"
-    :config
-    (setq web-mode-markup-indent-offset 2)
-    (setq web-mode-code-indent-offset 2)
-    (setq web-mode-script-padding 2)
-    ;; Use tidy5 instead of tidy, because we like HTML5.
-    (setq flycheck-html-tidy-executable "tidy5"))
+    ;; web-mode, please.
+    (use-package web-mode
+      :ensure t
+      :mode (("\\.html?$" . web-mode)
+             ("\\.tsx$" . web-mode))
+      :config
+      (setq web-mode-markup-indent-offset 2)
+      (setq web-mode-code-indent-offset 2)
+      (setq web-mode-script-padding 2)
+      ;; Use tidy5 instead of tidy, because we like HTML5.
+      (setq flycheck-html-tidy-executable "tidy5")
+      (add-hook 'web-mode-hook
+            (lambda ()
+              (when (string-equal "tsx" (file-name-extension buffer-file-name))
+                (setup-tide-mode)))))
 
-  ;; This is like HTML, right?
-  (use-package sass-mode
-    :mode "\\.scss\\'")
+    ;; This is like HTML, right?
+    (use-package sass-mode
+      :ensure t
+      :mode "\\.scss\\'")
 #+END_SRC
 
 ** JavaScript
@@ -443,6 +510,52 @@ This includes JSON.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
   (setq-default js-indent-level 2)
+#+END_SRC
+
+** jq
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package jq-mode
+    :ensure t
+    :mode (("\\.jq$" . jq-mode)))
+#+END_SRC
+
+** jsonnet
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package jsonnet-mode
+    :ensure t)
+#+END_SRC
+
+** LSP
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package lsp-mode
+    :ensure t
+    :hook
+    (rust-mode dhall-mode)
+    :config
+    (setq lsp-prefer-flymake nil
+          lsp-enable-snippet nil)
+    :commands
+    lsp)
+
+  (use-package lsp-ui
+    :ensure t
+    :config
+    (setq lsp-ui-doc-enable nil
+          lsp-ui-flycheck-enable t
+          lsp-ui-flycheck-live-reporting t
+          lsp-ui-sideline-show-hover nil)
+    :commands lsp-ui-mode)
+#+END_SRC
+
+** Lua
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package lua-mode
+    :ensure t
+    )
 #+END_SRC
 
 ** OCaml
@@ -491,6 +604,20 @@ I want .m files to be Octave, not Objective C.
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package octave-mode
     :mode "\\.m$")
+#+END_SRC
+
+** PHP
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package php-mode
+    :ensure t)
+#+END_SRC
+
+** Puppet
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package puppet-mode
+    :ensure t)
 #+END_SRC
 
 ** Python
@@ -542,13 +669,27 @@ I used to use python-docstring, but that seems to no longer be necessary.
           (indent-line-to indent)
           (when (> offset 0) (forward-char offset)))))
     (setq ruby-deep-indent-paren-style nil)
+    (use-package ruby-electric
+      :ensure t)
     (add-hook 'ruby-mode-hook 'ruby-electric-mode))
 #+END_SRC
 
 ** Rust
 
+I use [[LSP]] for Rust. Make sure `rls` is installed.
+
 #+BEGIN_SRC emacs-lisp :tangle yes
-  (add-hook 'rust-mode-hook #'flycheck-rust-setup)
+  ;; (add-hook 'rust-mode-hook #'flycheck-rust-setup)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package cargo
+    :ensure t
+    )
+
+  (use-package rust-mode
+    :ensure t
+    )
 #+END_SRC
 
 ** Shell
@@ -559,6 +700,35 @@ manually terminated.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
   (add-hook 'shell-mode-hook 'emacs-lock-mode)
+#+END_SRC
+
+** Terraform
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package terraform-mode
+    :ensure t)
+#+END_SRC
+
+** TypeScript
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package typescript-mode
+    :ensure t)
+
+  (setq-default typescript-indent-level 2)
+
+  (use-package tide
+    :ensure t
+    :after (typescript-mode flycheck)
+    :hook ((typescript-mode . tide-setup)
+           (typescript-mode . tide-hl-identifier-mode)))
+#+END_SRC
+
+** YAML
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package yaml-mode
+    :ensure t)
 #+END_SRC
 
 ** Things that weren't copied over
