@@ -68,7 +68,9 @@
   ;; Fix some keybindings
   (global-set-key [home] 'move-beginning-of-line)
   (global-set-key  [end] 'move-end-of-line)
-  ;; Invoke login shells, so that .profile or .bash_profile is read
+  ;; Avoid dired/ls errors
+  (setq dired-use-ls-dired nil)
+  ;; Invoke login shells so that .profile or .bash_profile is read
   (setq shell-command-switch "-lc")
   ;; Load some pbcopy/pbpaste functions
   (require 'pbstuff))
@@ -189,6 +191,9 @@
   :ensure t
   :defer t)
 
+(use-package csv-mode
+  :ensure t)
+
 (use-package dhall-mode
   :ensure t
   :config
@@ -283,13 +288,16 @@
 
 (use-package lsp-mode
   :ensure t
-  :hook
-  (rust-mode dhall-mode)
+  :hook ((python-mode . lsp-deferred)
+         ((rust-mode dhall-mode) . lsp))
   :config
   (setq lsp-prefer-flymake nil
-        lsp-enable-snippet nil)
-  :commands
-  lsp)
+        lsp-enable-snippet nil
+        lsp-headerline-breadcrumb-enable nil)
+  (lsp-register-custom-settings '(("pylsp.plugins.pylsp_mypy.dmypy" nil t)
+                                  ("pylsp.plugins.pylsp_mypy.live_mode" nil t)
+                                  ("pylsp.plugins.pylsp_mypy.report_progress" t t)))
+  :commands (lsp lsp-deferred))
 
 (use-package lsp-ui
   :ensure t
@@ -301,8 +309,10 @@
   :commands lsp-ui-mode)
 
 (use-package lua-mode
-  :ensure t
-  )
+  :ensure t)
+
+(use-package markdown-mode
+  :ensure t)
 
 (use-package tuareg
   :mode (("\\.ml[ily]?$" . tuareg-mode)
@@ -342,17 +352,31 @@
 (use-package octave-mode
   :mode "\\.m$")
 
+(use-package ox-reveal
+  :ensure t
+  :config
+  (setq org-export-allow-bind-keywords t))
+
 (use-package php-mode
+  :ensure t)
+
+(use-package powershell
   :ensure t)
 
 (use-package puppet-mode
   :ensure t)
 
-(use-package python
-  :mode ("\\.py\\'" . python-mode)
-  :config
-  (add-hook 'python-mode-hook
-            (lambda () (local-set-key "\C-m" 'newline-and-indent))))
+(use-package python-mode
+  :ensure t
+  :init
+  (setq py-underscore-word-syntax-p nil)
+  :custom
+  ;; This breaks indenting various things.
+  ;; (py-closing-list-dedents-bos t)
+  (py-docstring-syle 'django)
+  (py-docstring-fill-column 79)
+  (py-mark-decorators t)
+  (py-indent-list-style 'one-level-to-beginning-of-statement))
 
 (use-package ruby-mode
   :mode "\\.rb\\'"
@@ -392,6 +416,12 @@
 
 (use-package terraform-mode
   :ensure t)
+
+(add-hook 'text-mode-hook
+          'turn-on-visual-line-mode)
+(add-hook 'text-mode-hook
+          (lambda ()
+            (setq whitespace-style '(face empty tabs trailing))))
 
 (use-package typescript-mode
   :ensure t)

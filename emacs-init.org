@@ -1,6 +1,6 @@
 * Prelude: An org-mode emacs config
 
-This file gets turned into an emacs config using =org-babel-load-file=
+This file gets turned into an emacs config using ~org-babel-load-file~
 through a process called "tangling", which basically just extracts and
 concatenates all the =emacs-lisp= code blocks.
 
@@ -154,7 +154,7 @@ I prefer prefix uniquification with =ido-mode= to navigate.
 
 ** Syntax and highlighting
 
-Including =tabs= in =whitespace-style= is important for Python code.
+Including ~tabs~ in ~whitespace-style~ is important for Python code.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
   ;; Syntax highlighting on.
@@ -198,7 +198,9 @@ The =pbstuff= module is provided separately.
     ;; Fix some keybindings
     (global-set-key [home] 'move-beginning-of-line)
     (global-set-key  [end] 'move-end-of-line)
-    ;; Invoke login shells, so that .profile or .bash_profile is read
+    ;; Avoid dired/ls errors
+    (setq dired-use-ls-dired nil)
+    ;; Invoke login shells so that .profile or .bash_profile is read
     (setq shell-command-switch "-lc")
     ;; Load some pbcopy/pbpaste functions
     (require 'pbstuff))
@@ -371,6 +373,13 @@ over time.
     :defer t)
 #+END_SRC
 
+** CSV
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package csv-mode
+    :ensure t)
+#+END_SRC
+
 ** dhall
 
 #+BEGIN_SRC emacs-lisp :tangle yes
@@ -529,16 +538,21 @@ This includes JSON.
 
 ** LSP
 
+In its current incarnation, pylsp_mypy's dmypy support seems problematic.
+
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package lsp-mode
     :ensure t
-    :hook
-    (rust-mode dhall-mode)
+    :hook ((python-mode . lsp-deferred)
+           ((rust-mode dhall-mode) . lsp))
     :config
     (setq lsp-prefer-flymake nil
-          lsp-enable-snippet nil)
-    :commands
-    lsp)
+          lsp-enable-snippet nil
+          lsp-headerline-breadcrumb-enable nil)
+    (lsp-register-custom-settings '(("pylsp.plugins.pylsp_mypy.dmypy" nil t)
+                                    ("pylsp.plugins.pylsp_mypy.live_mode" nil t)
+                                    ("pylsp.plugins.pylsp_mypy.report_progress" t t)))
+    :commands (lsp lsp-deferred))
 
   (use-package lsp-ui
     :ensure t
@@ -554,8 +568,14 @@ This includes JSON.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package lua-mode
-    :ensure t
-    )
+    :ensure t)
+#+END_SRC
+
+** Markdown
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package markdown-mode
+    :ensure t)
 #+END_SRC
 
 ** OCaml
@@ -606,10 +626,37 @@ I want .m files to be Octave, not Objective C.
     :mode "\\.m$")
 #+END_SRC
 
+** org-reveal
+
+Presentation stuff. See https://github.com/yjwen/org-reveal for details.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package ox-reveal
+    :ensure t
+    :config
+    (setq org-export-allow-bind-keywords t))
+#+END_SRC
+
+# ** org-re-reveal
+
+# Presentation stuff. See https://gitlab.com/oer/org-re-reveal for details.
+
+# #+BEGIN_SRC emacs-lisp :tangle yes
+#   (use-package org-re-reveal
+#     :ensure t)
+# #+END_SRC
+
 ** PHP
 
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package php-mode
+    :ensure t)
+#+END_SRC
+
+** PowerShell
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package powershell
     :ensure t)
 #+END_SRC
 
@@ -624,26 +671,24 @@ I want .m files to be Octave, not Objective C.
 
 Tabs are highlighted in the general whitespace configuration.
 
+We need to set ~py-underscore-word-syntax-p~ in ~:init~ because it's used when
+the syntax table's being built and that apparently happens before ~:config~.
+
+In addition, we configure =lsp-mode= to start with =python-mode=.
+
 #+BEGIN_SRC emacs-lisp :tangle yes
-  (use-package python
-    :mode ("\\.py\\'" . python-mode)
-    :config
-    (add-hook 'python-mode-hook
-              (lambda () (local-set-key "\C-m" 'newline-and-indent))))
-#+END_SRC
+  (use-package python-mode
+    :ensure t
+    :init
+    (setq py-underscore-word-syntax-p nil)
+    :custom
+    ;; This breaks indenting various things.
+    ;; (py-closing-list-dedents-bos t)
+    (py-docstring-syle 'django)
+    (py-docstring-fill-column 79)
+    (py-mark-decorators t)
+    (py-indent-list-style 'one-level-to-beginning-of-statement))
 
-I used to use python-docstring, but that seems to no longer be necessary.
-
-#+BEGIN_SRC emacs-lisp :tangle no
-  (use-package python
-    :mode ("\\.py\\'" . python-mode)
-    :config
-    (add-hook 'python-mode-hook
-              (lambda () (local-set-key "\C-m" 'newline-and-indent)))
-    (use-package python-docstring
-      :config
-      (setq python-docstring-sentence-end-double-space nil)
-      (python-docstring-install)))
 #+END_SRC
 
 ** Ruby
@@ -707,6 +752,16 @@ manually terminated.
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package terraform-mode
     :ensure t)
+#+END_SRC
+
+** Text
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (add-hook 'text-mode-hook
+            'turn-on-visual-line-mode)
+  (add-hook 'text-mode-hook
+            (lambda ()
+              (setq whitespace-style '(face empty tabs trailing))))
 #+END_SRC
 
 ** TypeScript
