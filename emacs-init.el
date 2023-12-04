@@ -214,20 +214,21 @@
 (use-package erlang
   :ensure t)
 
+(use-package fountain-mode
+  :ensure t)
+
 (use-package go-mode
   :ensure t
-  :hook
-  (before-save . gofmt-before-save)
+  :hook ((go-mode . lsp)
+         ;; Drop tabs from visible whitespace list
+         (go-mode . (lambda ()
+                      (setq-local whitespace-style
+                                  '(face empty lines-tail trailing))))
+         ;; Let LSP rewrite my file, because Go is too annoying otherwise
+         (before-save . lsp-format-buffer)
+         (before-save . lsp-organize-imports))
   :config
-  ;; gopls doesn't yet fix imports.
-  (setq gofmt-command "goimports")
-  (add-to-list 'exec-path (concat (getenv "GOPATH") "/bin"))
-  (add-hook 'go-mode-hook #'lsp-deferred)
-  ;; (add-hook 'go-mode-hook 'flycheck-mode)
-  ;; Drop tabs from visible whitespace list.
-  (add-hook 'go-mode-hook
-            (lambda ()
-              (setq-local whitespace-style '(face empty lines-tail trailing)))))
+  (add-to-list 'exec-path (concat (getenv "GOPATH") "/bin")))
 
 ;; (use-package flycheck-gometalinter
 ;;   :ensure t
@@ -308,8 +309,8 @@
         lsp-ui-sideline-show-hover nil)
   :commands lsp-ui-mode)
 
-(use-package lua-mode
-  :ensure t)
+;; (use-package lua-mode
+;;   :ensure t)
 
 (use-package markdown-mode
   :ensure t)
@@ -358,6 +359,11 @@
   (setq org-export-allow-bind-keywords t))
 
 (use-package php-mode
+  :ensure t
+  :custom
+  (php-mode-coding-style 'symfony2))
+
+(use-package powershell
   :ensure t)
 
 (use-package powershell
@@ -418,10 +424,9 @@
   :ensure t)
 
 (add-hook 'text-mode-hook
-          'turn-on-visual-line-mode)
-(add-hook 'text-mode-hook
           (lambda ()
-            (setq whitespace-style '(face empty tabs trailing))))
+            (setq-local whitespace-style '(face empty tabs trailing))
+            (turn-on-visual-line-mode)))
 
 (use-package typescript-mode
   :ensure t)
