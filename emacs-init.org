@@ -65,6 +65,7 @@ This is a bunch of setup global stuff that always needs to happen.
 Add melpa and melpa-stable so we can have more nice packages.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
+  (require 'package)
   (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
   (add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 #+END_SRC
@@ -126,18 +127,12 @@ whenever we save this org-mode file.
   (use-package ido
     :config
     (ido-mode t)
-    (setq ido-everywhere t
-          ;; If the file at point exists, use that
-          ido-use-filename-at-point nil
-          ;; Or if it is an URL...
-          ido-use-url-at-point nil
-          ;; Even if TAB completes uniquely,
-          ;; still wait for RET
-          ido-confirm-unique-completion t
-          ;; If the input does not exist,
-          ;; don't look in unexpected places.
-          ;; I probably want a new file.
-          ido-auto-merge-work-directories-length -1))
+    :custom
+    (ido-everywhere t)
+    (ido-use-filename-at-point nil "If the file at point exists, use that. (?)")
+    (ido-use-url-at-point nil "Or if it is an URL...")
+    (ido-confirm-unique-completion t "Even if TAB completes uniquely, still wait for RET.")
+    (ido-auto-merge-work-directories-length -1 "If the input doesn't exist, don't look in unexpected places. I probably want a new file."))
 #+END_SRC
 
 ** Better buffer naming
@@ -147,9 +142,9 @@ I prefer prefix uniquification with =ido-mode= to navigate.
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package uniquify
     ;; :ensure t
-    :config
-    (setq uniquify-buffer-name-style 'post-forward
-          uniquify-separator ":"))
+    :custom
+    (uniquify-buffer-name-style 'post-forward)
+    (uniquify-separator ":"))
 #+END_SRC
 
 ** Syntax and highlighting
@@ -162,7 +157,7 @@ Including ~tabs~ in ~whitespace-style~ is important for Python code.
   (defconst font-lock-maximum-decoration t)
 
   ;; Show various whitespace.
-  (setq whitespace-style '(face empty tabs lines-tail trailing))
+  (setopt whitespace-style '(face empty tabs lines-tail trailing))
   (global-whitespace-mode t)
   (setq-default show-trailing-whitespace t)
 
@@ -283,9 +278,10 @@ No menus in the terminal, please.
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package flycheck
     :ensure t
-    :init
-    (global-flycheck-mode)
-    (setq flycheck-check-syntax-automatically '(mode-enabled save)))
+    :custom
+    (global-flycheck-mode t "Turn on flycheck, please.")
+    (flycheck-check-syntax-automatically '(mode-enabled save) "Don't get in the way.")
+    (flycheck-yamllintrc ".yamllint.yaml"))
 #+END_SRC
 
 ** Flyspell
@@ -314,8 +310,8 @@ over time.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package org
-    :config
-    (setq org-src-fontify-natively t))
+    :custom
+    (org-src-fontify-natively t "I think this is the default now."))
 #+END_SRC
 
 ** Rainbow delimiters
@@ -349,6 +345,8 @@ over time.
 #+END_SRC
 
 ** C#
+
+TODO: Check if this can switch from setq to custom.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package omnisharp-mode
@@ -384,10 +382,9 @@ over time.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package dhall-mode
-    :ensure t
-    :config
-    (setq
-     dhall-format-at-save nil))
+    ;; :ensure t
+    :custom
+    (dhall-format-at-save nil "Please don't change my text under me."))
 #+END_SRC
 
 ** Docker
@@ -477,6 +474,8 @@ This is mostly used for Jenkins.
 
 ** HTML
 
+TODO: Figure out if we can configure this with custom.
+
 #+BEGIN_SRC emacs-lisp :tangle yes
     ;; web-mode, please.
     (use-package web-mode
@@ -526,6 +525,8 @@ This includes JSON.
 ** LSP
 
 In its current incarnation, pylsp_mypy's dmypy support seems problematic.
+
+TODO: Figure out if we can configure this with custom. Or maybe replace it with eglot.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package lsp-mode

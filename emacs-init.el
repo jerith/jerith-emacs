@@ -1,3 +1,4 @@
+(require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 
@@ -28,31 +29,25 @@
 (use-package ido
   :config
   (ido-mode t)
-  (setq ido-everywhere t
-        ;; If the file at point exists, use that
-        ido-use-filename-at-point nil
-        ;; Or if it is an URL...
-        ido-use-url-at-point nil
-        ;; Even if TAB completes uniquely,
-        ;; still wait for RET
-        ido-confirm-unique-completion t
-        ;; If the input does not exist,
-        ;; don't look in unexpected places.
-        ;; I probably want a new file.
-        ido-auto-merge-work-directories-length -1))
+  :custom
+  (ido-everywhere t)
+  (ido-use-filename-at-point nil "If the file at point exists, use that. (?)")
+  (ido-use-url-at-point nil "Or if it is an URL...")
+  (ido-confirm-unique-completion t "Even if TAB completes uniquely, still wait for RET.")
+  (ido-auto-merge-work-directories-length -1 "If the input doesn't exist, don't look in unexpected places. I probably want a new file."))
 
 (use-package uniquify
   ;; :ensure t
-  :config
-  (setq uniquify-buffer-name-style 'post-forward
-        uniquify-separator ":"))
+  :custom
+  (uniquify-buffer-name-style 'post-forward)
+  (uniquify-separator ":"))
 
 ;; Syntax highlighting on.
 (global-font-lock-mode 1)
 (defconst font-lock-maximum-decoration t)
 
 ;; Show various whitespace.
-(setq whitespace-style '(face empty tabs lines-tail trailing))
+(setopt whitespace-style '(face empty tabs lines-tail trailing))
 (global-whitespace-mode t)
 (setq-default show-trailing-whitespace t)
 
@@ -133,9 +128,10 @@
 
 (use-package flycheck
   :ensure t
-  :init
-  (global-flycheck-mode)
-  (setq flycheck-check-syntax-automatically '(mode-enabled save)))
+  :custom
+  (global-flycheck-mode t "Turn on flycheck, please.")
+  (flycheck-check-syntax-automatically '(mode-enabled save) "Don't get in the way.")
+  (flycheck-yamllintrc ".yamllint.yaml"))
 
 (use-package flyspell
   :hook
@@ -149,8 +145,8 @@
 (setq-default gist-view-gist t)
 
 (use-package org
-  :config
-  (setq org-src-fontify-natively t))
+  :custom
+  (org-src-fontify-natively t "I think this is the default now."))
 
 (use-package rainbow-delimiters
   :ensure t
@@ -195,10 +191,9 @@
   :ensure t)
 
 (use-package dhall-mode
-  :ensure t
-  :config
-  (setq
-   dhall-format-at-save nil))
+  ;; :ensure t
+  :custom
+  (dhall-format-at-save nil "Please don't change my text under me."))
 
 (use-package dockerfile-mode
   :ensure t
