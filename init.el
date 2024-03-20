@@ -34,10 +34,13 @@
  '(flycheck-yamllintrc ".yamllint.yaml")
  '(frame-background-mode 'dark)
  '(package-selected-packages
-   '(org-re-reveal ox-reveal csv-mode powershell php-mode tide typescript-mode fountain-mode rust-mode nim-mode julia-mode flycheck-clj-kondo cider racer graphql-mode groovy-mode async terraform-mode omnisharp flycheck-gometalinter bazel-mode flycheck-elixir alchemist toml-mode python-docstring yaml-mode xterm-color web-mode utop use-package tuareg sonic-pi sass-mode ruby-electric rainbow-identifiers rainbow-delimiters puppet-mode paredit pallet mediawiki markdown-mode haskell-mode go-mode gist flycheck-rust eruby-mode erlang dockerfile-mode color-theme clojure-mode cargo auto-complete))
+   '(org-re-reveal ox-reveal csv-mode powershell php-mode tide typescript-mode fountain-mode rust-mode nim-mode julia-mode flycheck-clj-kondo cider racer graphql-mode groovy-mode async terraform-mode omnisharp flycheck-gometalinter bazel-mode flycheck-elixir alchemist toml-mode python-docstring yaml-mode xterm-color web-mode utop tuareg sonic-pi sass-mode ruby-electric rainbow-identifiers rainbow-delimiters puppet-mode paredit pallet mediawiki markdown-mode haskell-mode go-mode gist flycheck-rust eruby-mode erlang dockerfile-mode color-theme clojure-mode cargo auto-complete))
  '(python-fill-docstring-style 'symmetric)
  '(safe-local-variable-values
-   '((org-confirm-babel-evaluate)
+   '((lsp-go-goimports-local . "github.com/jerith/combparse")
+     (lsp-go-goimports-local . "github.com/jerith/adventofcode-2023")
+     (lsp-go-goimports-local . "github.com/jerith/adventofcode-2015-go")
+     (org-confirm-babel-evaluate)
      (lsp-pylsp-plugins-flake8-enabled)
      (test-case-name . vumi.dispatchers.tests.test_load_balancer)
      (test-case-name . vumi.dispatchers.tests.test_base)
@@ -122,3 +125,4 @@
  ;; If there is more than one, they won't work right.
  '(eruby-comment-face ((t (:inherit font-lock-comment-face :background "color-240"))))
  '(eruby-standard-face ((t (:background "color-240")))))
+(put 'dired-find-alternate-file 'disabled nil)

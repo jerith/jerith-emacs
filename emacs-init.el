@@ -205,6 +205,7 @@
   :mode "\\.docker$")
 
 (use-package elixir-mode
+  :ensure t
   :mode (("\\.exs?$" . elixir-mode))
   :config
   (require 'alchemist)
@@ -220,34 +221,15 @@
 (use-package go-mode
   :ensure t
   :hook ((go-mode . lsp)
-         ;; Drop tabs from visible whitespace list
-         (go-mode . (lambda ()
-                      (setq-local whitespace-style
-                                  '(face empty lines-tail trailing))))
-         ;; Let LSP rewrite my file, because Go is too annoying otherwise
-         (before-save . lsp-format-buffer)
-         (before-save . lsp-organize-imports))
+         (go-mode
+          . (lambda ()
+              ;; Drop tabs from visible whitespace list
+              (setq-local whitespace-style '(face empty lines-tail trailing))
+              ;; Let LSP rewrite my file, because Go is too annoying otherwise
+              (add-hook 'before-save-hook #'lsp-format-buffer nil 'local)
+              (add-hook 'before-save-hook #'lsp-organize-imports nil 'local))))
   :config
   (add-to-list 'exec-path (concat (getenv "GOPATH") "/bin")))
-
-;; (use-package flycheck-gometalinter
-;;   :ensure t
-;;   :config
-;;   (progn
-;;     (setq flycheck-gometalinter-fast t)
-;;     (setq flycheck-gometalinter-tests t)
-;;     (setq flycheck-gometalinter-deadline "10s")
-;;     (flycheck-gometalinter-setup)))
-
-;; (use-package flycheck-golangci-lint
-;;   :ensure t
-;;   :hook (go-mode . flycheck-golangci-lint-setup)
-;;   :config
-;;   (setq flycheck-golangci-lint-tests t)
-;;   (setq flycheck-golangci-lint-deadline "5s")
-;;   ;; There's a bug that requires us to stick = on the front.
-;;   (setq flycheck-golangci-lint-config
-;;         (expand-file-name "~/.gostuff/golangci-emacs.yml")))
 
 (use-package graphql-mode
   :ensure t)
