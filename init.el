@@ -33,7 +33,8 @@
  ;; If there is more than one, they won't work right.
  '(frame-background-mode 'dark)
  '(package-selected-packages
-   '(yaml-mode web-mode typescript-mode tide terraform-mode sass-mode rust-mode ruby-electric rainbow-delimiters python-mode puppet-mode powershell php-mode pdf-tools ox-reveal org-ref org-re-reveal lua-mode lsp-ui key-chord jsonnet-mode jq-mode ivy helm-bibtex graphql-mode go-mode fountain-mode flycheck-clj-kondo erlang elixir-mode dockerfile-mode dhall-mode csv-mode cider cargo)))
+   '(origami async yaml-mode web-mode typescript-mode tide terraform-mode sass-mode rust-mode ruby-electric rainbow-delimiters python-mode puppet-mode powershell php-mode pdf-tools ox-reveal org-ref org-re-reveal lua-mode lsp-ui key-chord jsonnet-mode jq-mode ivy helm-bibtex graphql-mode go-mode fountain-mode flycheck-clj-kondo erlang dockerfile-mode dhall-mode csv-mode cider cargo))
+ '(safe-local-variable-values '((lsp-pylsp-plugins-flake8-enabled))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

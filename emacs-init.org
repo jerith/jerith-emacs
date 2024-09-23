@@ -250,6 +250,10 @@ No menus in the terminal, please.
   ;; Autorevert to make VCS nicer
   (global-auto-revert-mode 1)
 
+  ;; Stop trying to copy into the system clipboard!
+  (setq select-enable-primary nil)
+  (setq select-enable-clipboard nil)
+
   ;; One space between sentences, please.
   (setq sentence-end-double-space nil)
 
@@ -381,10 +385,10 @@ TODO: Check if this can switch from setq to custom.
 ** dhall
 
 #+BEGIN_SRC emacs-lisp :tangle yes
-  (use-package dhall-mode
-    ;; :ensure t
-    :custom
-    (dhall-format-at-save nil "Please don't change my text under me."))
+  ;; (use-package dhall-mode
+  ;;   ;; :ensure t
+  ;;   :custom
+  ;;   (dhall-format-at-save nil "Please don't change my text under me."))
 #+END_SRC
 
 ** Docker
@@ -397,18 +401,32 @@ TODO: Check if this can switch from setq to custom.
 
 ** Elixir
 
+NOTE: elixir-ts-mode is built into emacs 30+. For emacs 29, we need to install the backported package.
+
+To install the necessary grammars: ~M-x elixir-ts-install-grammar~
+
+
+Old bits:
+
 Setup documentation for this is annoyingly hard to find. :-(
 
 =alchemist-mode= is a minor mode, so we need =elixir-mode= as well.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
-  (use-package elixir-mode
-    :ensure t
-    :mode (("\\.exs?$" . elixir-mode))
-    :config
-    (require 'alchemist)
-    (add-hook 'elixir-mode-hook 'alchemist-mode)
-    (setq alchemist-hooks-compile-on-save t))
+  ;; This segfaults on closing paren. :-(
+  (use-package elixir-ts-mode
+    :ensure t)
+
+  ;; (use-package alchemist
+  ;;   :ensure t)
+
+  ;; (use-package elixir-mode
+  ;;   :ensure t
+  ;;   :mode (("\\.exs?$" . elixir-mode))
+  ;;   :config
+  ;;   (require 'alchemist)
+  ;;   (add-hook 'elixir-mode-hook 'alchemist-mode)
+  ;;   (setq alchemist-hooks-compile-on-save t))
 #+END_SRC
 
 ** Emacs-reveal
@@ -425,9 +443,18 @@ disable for now.
 
 ** Erlang
 
+Without the mode config (which is copied from the list inside the mode itself), this blocks emacs startup for an annoying large number of milliseconds.
+
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package erlang
-    :ensure t)
+    :ensure t
+    :mode (("\\.erl$" . erlang-mode)
+           ("\\.app\\.src$" . erlang-mode)
+           ("\\.escript" . erlang-mode)
+           ("\\.hrl$" . erlang-mode)
+           ("\\.xrl$" . erlang-mode)
+           ("\\.yrl" . erlang-mode)
+           ("/ebin/.+\\.app" . erlang-mode)))
 #+END_SRC
 
 ** Fountain

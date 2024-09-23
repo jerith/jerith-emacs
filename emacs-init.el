@@ -106,6 +106,10 @@
 ;; Autorevert to make VCS nicer
 (global-auto-revert-mode 1)
 
+;; Stop trying to copy into the system clipboard!
+(setq select-enable-primary nil)
+(setq select-enable-clipboard nil)
+
 ;; One space between sentences, please.
 (setq sentence-end-double-space nil)
 
@@ -190,25 +194,39 @@
 (use-package csv-mode
   :ensure t)
 
-(use-package dhall-mode
-  ;; :ensure t
-  :custom
-  (dhall-format-at-save nil "Please don't change my text under me."))
+;; (use-package dhall-mode
+;;   ;; :ensure t
+;;   :custom
+;;   (dhall-format-at-save nil "Please don't change my text under me."))
 
 (use-package dockerfile-mode
   :ensure t
   :mode "\\.docker$")
 
-(use-package elixir-mode
-  :ensure t
-  :mode (("\\.exs?$" . elixir-mode))
-  :config
-  (require 'alchemist)
-  (add-hook 'elixir-mode-hook 'alchemist-mode)
-  (setq alchemist-hooks-compile-on-save t))
+;; This segfaults on closing paren. :-(
+(use-package elixir-ts-mode
+  :ensure t)
+
+;; (use-package alchemist
+;;   :ensure t)
+
+;; (use-package elixir-mode
+;;   :ensure t
+;;   :mode (("\\.exs?$" . elixir-mode))
+;;   :config
+;;   (require 'alchemist)
+;;   (add-hook 'elixir-mode-hook 'alchemist-mode)
+;;   (setq alchemist-hooks-compile-on-save t))
 
 (use-package erlang
-  :ensure t)
+  :ensure t
+  :mode (("\\.erl$" . erlang-mode)
+         ("\\.app\\.src$" . erlang-mode)
+         ("\\.escript" . erlang-mode)
+         ("\\.hrl$" . erlang-mode)
+         ("\\.xrl$" . erlang-mode)
+         ("\\.yrl" . erlang-mode)
+         ("/ebin/.+\\.app" . erlang-mode)))
 
 (use-package fountain-mode
   :ensure t)
