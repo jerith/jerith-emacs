@@ -130,12 +130,17 @@
 (setq auto-save-default nil)
 (setq make-backup-files nil)
 
-(use-package flycheck
-  :ensure t
-  :custom
-  (global-flycheck-mode t "Turn on flycheck, please.")
-  (flycheck-check-syntax-automatically '(mode-enabled save) "Don't get in the way.")
-  (flycheck-yamllintrc ".yamllint.yaml"))
+;; (use-package flycheck
+;;   :ensure t
+;;   :custom
+;;   (global-flycheck-mode t "Turn on flycheck, please.")
+;;   (flycheck-check-syntax-automatically '(mode-enabled save) "Don't get in the way.")
+;;   (flycheck-yamllintrc ".yamllint.yaml"))
+
+(use-package flymake
+  :bind
+  (("M-n" . flymake-goto-next-error)
+   ("M-p" . flymake-goto-prev-error)))
 
 (use-package flyspell
   :hook
@@ -145,6 +150,23 @@
   :custom
   (ispell-program-name "aspell")
   (ispell-extra-args '("--sug-mode=normal" "--master=en_GB-ize-w_accents")))
+
+(use-package treesit-auto
+  :ensure t
+  :custom
+  (treesit-auto-install 'prompt)
+  :config
+  (global-treesit-auto-mode))
+
+(use-package eglot
+  :custom
+  ;; (eglot-send-changes-idle-time 60 "I'd rather not do this at all, but it's better than nothing.")
+  (eglot-connect-timeout 60 "elixir-ls takes a while to start, sometimes.")
+  :config
+  (add-to-list 'eglot-server-programs '(elixir-ts-mode "elixir-ls"))
+  (add-to-list 'eglot-stay-out-of 'eldoc)
+  :hook ((python-ts-mode . eglot-ensure)
+         (elixir-ts-mode . eglot-ensure)))
 
 (setq-default gist-view-gist t)
 
@@ -203,7 +225,6 @@
   :ensure t
   :mode "\\.docker$")
 
-;; This segfaults on closing paren. :-(
 (use-package elixir-ts-mode
   :ensure t)
 
@@ -282,27 +303,27 @@
 (use-package jsonnet-mode
   :ensure t)
 
-(use-package lsp-mode
-  :ensure t
-  :hook ((python-mode . lsp-deferred)
-         ((rust-mode dhall-mode) . lsp))
-  :config
-  (setq lsp-prefer-flymake nil
-        lsp-enable-snippet nil
-        lsp-headerline-breadcrumb-enable nil)
-  (lsp-register-custom-settings '(("pylsp.plugins.pylsp_mypy.dmypy" nil t)
-                                  ("pylsp.plugins.pylsp_mypy.live_mode" nil t)
-                                  ("pylsp.plugins.pylsp_mypy.report_progress" t t)))
-  :commands (lsp lsp-deferred))
+;; (use-package lsp-mode
+;;   :ensure t
+;;   :hook ((python-mode . lsp-deferred)
+;;          ((rust-mode dhall-mode) . lsp))
+;;   :config
+;;   (setq lsp-prefer-flymake nil
+;;         lsp-enable-snippet nil
+;;         lsp-headerline-breadcrumb-enable nil)
+;;   (lsp-register-custom-settings '(("pylsp.plugins.pylsp_mypy.dmypy" nil t)
+;;                                   ("pylsp.plugins.pylsp_mypy.live_mode" nil t)
+;;                                   ("pylsp.plugins.pylsp_mypy.report_progress" t t)))
+;;   :commands (lsp lsp-deferred))
 
-(use-package lsp-ui
-  :ensure t
-  :config
-  (setq lsp-ui-doc-enable nil
-        lsp-ui-flycheck-enable t
-        lsp-ui-flycheck-live-reporting t
-        lsp-ui-sideline-show-hover nil)
-  :commands lsp-ui-mode)
+;; (use-package lsp-ui
+;;   :ensure t
+;;   :config
+;;   (setq lsp-ui-doc-enable nil
+;;         lsp-ui-flycheck-enable t
+;;         lsp-ui-flycheck-live-reporting t
+;;         lsp-ui-sideline-show-hover nil)
+;;   :commands lsp-ui-mode)
 
 ;; (use-package lua-mode
 ;;   :ensure t)
@@ -367,17 +388,22 @@
 (use-package puppet-mode
   :ensure t)
 
-(use-package python-mode
-  :ensure t
-  :init
-  (setq py-underscore-word-syntax-p nil)
+(use-package python
   :custom
-  ;; This breaks indenting various things.
-  ;; (py-closing-list-dedents-bos t)
-  (py-docstring-syle 'django)
-  (py-docstring-fill-column 79)
-  (py-mark-decorators t)
-  (py-indent-list-style 'one-level-to-beginning-of-statement))
+  (python-fill-docstring-style 'django))
+
+;; Assorted old stuff for the _other_ python-mode.
+;; (use-package python-mode
+;;   :ensure t
+;;   :init
+;;   (setq py-underscore-word-syntax-p nil)
+;;   :custom
+;;   ;; This breaks indenting various things.
+;;   ;; (py-closing-list-dedents-bos t)
+;;   (py-docstring-syle 'django)
+;;   (py-docstring-fill-column 79)
+;;   (py-mark-decorators t)
+;;   (py-indent-list-style 'one-level-to-beginning-of-statement))
 
 (use-package ruby-mode
   :mode "\\.rb\\'"
