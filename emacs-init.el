@@ -1,4 +1,4 @@
-﻿(require 'package)
+(require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 
@@ -64,9 +64,9 @@
   (global-set-key [home] 'move-beginning-of-line)
   (global-set-key  [end] 'move-end-of-line)
   ;; Avoid dired/ls errors
-  (setq dired-use-ls-dired nil)
+  (setopt dired-use-ls-dired nil)
   ;; Invoke login shells so that .profile or .bash_profile is read
-  (setq shell-command-switch "-lc")
+  (setopt shell-command-switch "-lc")
   ;; Load some pbcopy/pbpaste functions
   (require 'pbstuff))
 
@@ -107,28 +107,31 @@
 (global-auto-revert-mode 1)
 
 ;; Stop trying to copy into the system clipboard!
-(setq select-enable-primary nil)
-(setq select-enable-clipboard nil)
+(setopt select-enable-primary nil)
+(setopt select-enable-clipboard nil)
+
+;; No shift-select, please. It gets in the way.
+(setopt shift-select-mode nil)
 
 ;; One space between sentences, please.
-(setq sentence-end-double-space nil)
+(setopt sentence-end-double-space nil)
 
 ;; Undo some cruft that may have been done.
 (cua-mode 0)
 (if window-system (tool-bar-mode 0))
-(setq inhibit-startup-screen t)
+(setopt inhibit-startup-screen t)
 
 ;; Better behaviour when started with multiple files.
-(setq inhibit-startup-buffer-menu t)
-(setq split-width-threshold 150)
+(setopt inhibit-startup-buffer-menu t)
+(setopt split-width-threshold 150)
 
 ;; Current point in mode bar.
 (line-number-mode t)
 (column-number-mode t)
 
 ;; Turn off backups (that's what VCS is for) and move auto-save out the way.
-(setq auto-save-default nil)
-(setq make-backup-files nil)
+(setopt auto-save-default nil)
+(setopt make-backup-files nil)
 
 ;; (use-package flycheck
 ;;   :ensure t
@@ -197,8 +200,8 @@
 
 (use-package omnisharp-mode
   :hook csharp-mode
-  :init
-  (setq omnisharp-server-executable-path "/usr/local/bin/omnisharp"))
+  :custom
+  (omnisharp-server-executable-path "/usr/local/bin/omnisharp"))
 
 (use-package clojure-mode
   :ensure t
@@ -251,6 +254,9 @@
 (use-package fountain-mode
   :ensure t)
 
+(use-package git-modes
+  :ensure t)
+
 (use-package go-mode
   :ensure t
   :hook ((go-mode . lsp)
@@ -272,12 +278,13 @@
   :ensure t
   :mode (("\\.html?\\'" . web-mode)
          ("\\.tsx\\'" . web-mode))
-  :config
-  (setq web-mode-markup-indent-offset 2)
-  (setq web-mode-code-indent-offset 2)
-  (setq web-mode-script-padding 2)
+  :custom
+  (web-mode-markup-indent-offset 2)
+  (web-mode-code-indent-offset 2)
+  (web-mode-script-padding 2)
   ;; Use tidy5 instead of tidy, because we like HTML5.
-  (setq flycheck-html-tidy-executable "tidy5")
+  (flycheck-html-tidy-executable "tidy5")
+  :config
   (add-hook 'web-mode-hook
         (lambda ()
           (when (string-equal "tsx" (file-name-extension buffer-file-name))
