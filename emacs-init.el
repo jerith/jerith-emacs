@@ -1,4 +1,4 @@
-(require 'package)
+﻿(require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 
@@ -165,8 +165,7 @@
   :config
   (add-to-list 'eglot-server-programs '(elixir-ts-mode "elixir-ls"))
   (add-to-list 'eglot-stay-out-of 'eldoc)
-  :hook ((python-ts-mode . eglot-ensure)
-         (elixir-ts-mode . eglot-ensure)))
+  :hook ((python-ts-mode elixir-ts-mode kotlin-ts-mode) . eglot-ensure))
 
 (setq-default gist-view-gist t)
 
@@ -223,7 +222,7 @@
 
 (use-package dockerfile-mode
   :ensure t
-  :mode "\\.docker$")
+  :mode "\\.docker\\'")
 
 (use-package elixir-ts-mode
   :ensure t)
@@ -241,12 +240,12 @@
 
 (use-package erlang
   :ensure t
-  :mode (("\\.erl$" . erlang-mode)
-         ("\\.app\\.src$" . erlang-mode)
+  :mode (("\\.erl\\'" . erlang-mode)
+         ("\\.app\\.src\\'" . erlang-mode)
          ("\\.escript" . erlang-mode)
-         ("\\.hrl$" . erlang-mode)
-         ("\\.xrl$" . erlang-mode)
-         ("\\.yrl" . erlang-mode)
+         ("\\.hrl\\'" . erlang-mode)
+         ("\\.xrl\\'" . erlang-mode)
+         ("\\.yrl\\'" . erlang-mode)
          ("/ebin/.+\\.app" . erlang-mode)))
 
 (use-package fountain-mode
@@ -268,16 +267,11 @@
 (use-package graphql-mode
   :ensure t)
 
-(use-package groovy-mode
-  :mode (("^Jenkinsfile$" . groovy-mode)
-         ("\\.jenkins$" . groovy-mode)
-         ("\\.groovy$" . groovy-mode)))
-
 ;; web-mode, please.
 (use-package web-mode
   :ensure t
-  :mode (("\\.html?$" . web-mode)
-         ("\\.tsx$" . web-mode))
+  :mode (("\\.html?\\'" . web-mode)
+         ("\\.tsx\\'" . web-mode))
   :config
   (setq web-mode-markup-indent-offset 2)
   (setq web-mode-code-indent-offset 2)
@@ -298,10 +292,27 @@
 
 (use-package jq-mode
   :ensure t
-  :mode (("\\.jq$" . jq-mode)))
+  :mode (("\\.jq\\'" . jq-mode)))
 
 (use-package jsonnet-mode
   :ensure t)
+
+(use-package kotlin-ts-mode
+  :ensure t
+  :mode "\\.kts?\\'"
+  :hook ((kotlin-ts-mode
+          . (lambda ()
+              (setq-local fill-column 139)
+              (setq-local whitespace-line-column 139)
+              ;; Use // instead of /* ... */ for comments.
+              ;; (Adapted from elixir-ts-mode.)
+              (setq-local comment-start "// ")
+              (setq-local comment-start-skip
+                          (rx "//" (* (syntax whitespace))))
+              (setq-local comment-end "")
+              (setq-local comment-end-skip
+                          (rx (* (syntax whitespace))
+                              (group (or (syntax comment-end) "\n"))))))))
 
 ;; (use-package lsp-mode
 ;;   :ensure t
@@ -332,9 +343,9 @@
   :ensure t)
 
 (use-package tuareg
-  :mode (("\\.ml[ily]?$" . tuareg-mode)
-         ("\\.topml$" . tuareg-mode)
-         ("\\.atd$" . tuareg-mode))
+  :mode (("\\.ml[ily]?\\'" . tuareg-mode)
+         ("\\.topml\\'" . tuareg-mode)
+         ("\\.atd\\'" . tuareg-mode))
   :config
   ;; Undefine this function to stop `<<' triggering camlp4 syntax stuff.
   (defun tuareg-syntax-propertize (start end))
@@ -367,7 +378,7 @@
   (add-hook 'tuareg-mode-hook 'auto-complete-mode))
 
 (use-package octave-mode
-  :mode "\\.m$")
+  :mode "\\.m\\'")
 
 (use-package ox-reveal
   :ensure t

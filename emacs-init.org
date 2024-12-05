@@ -337,8 +337,7 @@ TODO: Write something useful here.
     :config
     (add-to-list 'eglot-server-programs '(elixir-ts-mode "elixir-ls"))
     (add-to-list 'eglot-stay-out-of 'eldoc)
-    :hook ((python-ts-mode . eglot-ensure)
-           (elixir-ts-mode . eglot-ensure)))
+    :hook ((python-ts-mode elixir-ts-mode kotlin-ts-mode) . eglot-ensure))
 
 #+END_SRC
 
@@ -437,7 +436,7 @@ TODO: Check if this can switch from setq to custom.
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package dockerfile-mode
     :ensure t
-    :mode "\\.docker$")
+    :mode "\\.docker\\'")
 #+END_SRC
 
 ** Elixir
@@ -488,12 +487,12 @@ Without the mode config (which is copied from the list inside the mode itself), 
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package erlang
     :ensure t
-    :mode (("\\.erl$" . erlang-mode)
-           ("\\.app\\.src$" . erlang-mode)
+    :mode (("\\.erl\\'" . erlang-mode)
+           ("\\.app\\.src\\'" . erlang-mode)
            ("\\.escript" . erlang-mode)
-           ("\\.hrl$" . erlang-mode)
-           ("\\.xrl$" . erlang-mode)
-           ("\\.yrl" . erlang-mode)
+           ("\\.hrl\\'" . erlang-mode)
+           ("\\.xrl\\'" . erlang-mode)
+           ("\\.yrl\\'" . erlang-mode)
            ("/ebin/.+\\.app" . erlang-mode)))
 #+END_SRC
 
@@ -528,17 +527,6 @@ Without the mode config (which is copied from the list inside the mode itself), 
     :ensure t)
 #+END_SRC
 
-** Groovy
-
-This is mostly used for Jenkins.
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-  (use-package groovy-mode
-    :mode (("^Jenkinsfile$" . groovy-mode)
-           ("\\.jenkins$" . groovy-mode)
-           ("\\.groovy$" . groovy-mode)))
-#+END_SRC
-
 ** HTML
 
 TODO: Figure out if we can configure this with custom.
@@ -547,8 +535,8 @@ TODO: Figure out if we can configure this with custom.
     ;; web-mode, please.
     (use-package web-mode
       :ensure t
-      :mode (("\\.html?$" . web-mode)
-             ("\\.tsx$" . web-mode))
+      :mode (("\\.html?\\'" . web-mode)
+             ("\\.tsx\\'" . web-mode))
       :config
       (setq web-mode-markup-indent-offset 2)
       (setq web-mode-code-indent-offset 2)
@@ -579,7 +567,7 @@ This includes JSON.
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package jq-mode
     :ensure t
-    :mode (("\\.jq$" . jq-mode)))
+    :mode (("\\.jq\\'" . jq-mode)))
 #+END_SRC
 
 ** jsonnet
@@ -587,6 +575,27 @@ This includes JSON.
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package jsonnet-mode
     :ensure t)
+#+END_SRC
+
+** kotlin
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package kotlin-ts-mode
+    :ensure t
+    :mode "\\.kts?\\'"
+    :hook ((kotlin-ts-mode
+            . (lambda ()
+                (setq-local fill-column 139)
+                (setq-local whitespace-line-column 139)
+                ;; Use // instead of /* ... */ for comments.
+                ;; (Adapted from elixir-ts-mode.)
+                (setq-local comment-start "// ")
+                (setq-local comment-start-skip
+                            (rx "//" (* (syntax whitespace))))
+                (setq-local comment-end "")
+                (setq-local comment-end-skip
+                            (rx (* (syntax whitespace))
+                                (group (or (syntax comment-end) "\n"))))))))
 #+END_SRC
 
 ** LSP
@@ -637,9 +646,9 @@ TODO: Figure out if we can configure this with custom. Or maybe replace it with 
 
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package tuareg
-    :mode (("\\.ml[ily]?$" . tuareg-mode)
-           ("\\.topml$" . tuareg-mode)
-           ("\\.atd$" . tuareg-mode))
+    :mode (("\\.ml[ily]?\\'" . tuareg-mode)
+           ("\\.topml\\'" . tuareg-mode)
+           ("\\.atd\\'" . tuareg-mode))
     :config
     ;; Undefine this function to stop `<<' triggering camlp4 syntax stuff.
     (defun tuareg-syntax-propertize (start end))
@@ -678,7 +687,7 @@ I want .m files to be Octave, not Objective C.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package octave-mode
-    :mode "\\.m$")
+    :mode "\\.m\\'")
 #+END_SRC
 
 ** org-reveal
